@@ -5,7 +5,7 @@ class GF:
         self.val = val
 
     def __add__(self,gf):
-        return GF(self.val ^ gf.val)
+        return self.remainder(self.val ^ gf.val)
 
     def __mul__(self,gf):
         a = self.val
@@ -19,6 +19,7 @@ class GF:
     def remainder(self,imd):
         irreducible = 283 # x^8 + x^4 + x^3 + x + 1
         digits = []
+        if imd == 0: return GF(imd)
         while np.log2(imd) > 9:
             digits.insert(0,imd%2)
             imd = imd//2
