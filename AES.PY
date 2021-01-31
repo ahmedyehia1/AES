@@ -1,25 +1,20 @@
 import numpy as np
+from Sbox import Sbox
+from ShiftRows import ShiftRows
+from MixColumns import MixColumns
+from KeyGen import KeyGen
 
-class GF:
-    def __init__(self,val):
-        self.val = val
-    def __add__(self,gf):
-        return self.val ^ gf.val
-    def __mul__(self,gf):
-        a = self.val
-        b = gf.val
-        imd = 0
-        while a > 0:
-            imd ^= b*(a%2)
-            a,b = int(a/2),2*b
-        irreducible = 155 # x^8 + x^4 + x^3 + x + 1
-        digits = []
-        while np.log2(imd) > 8:
-            digits.insert(0,imd%2)
-            imd = int(imd/2)
-        while True:
-            while np.log2(imd) < 7:
-                if len(digits) == 0: return imd
-                imd = 2*imd + digits[0]
-                digits.pop(0)
-            imd = irreducible ^ imd
+class AES:
+    def Encrypt(self,plaintext,key):
+        roundCount = 10
+        roundKey = key
+        plaintext = np.array([int(plaintext[i:i+2],16) for i in range(0,len(plaintext),2)]).reshape(4,4)
+        for r in range(roundCount):
+            plaintext = Sbox(plaintext)
+            plaintext = ShiftRows(plaintext)
+            plaintext = MixColumns(plaintext,final=not bool(roundCount-r-1))
+            plaintext = plaintext ^ roundKey
+            roundKey = KeyGen(roundKey)
+            pass
+    def Decrypt(self,ciphertext,key):
+        pass
