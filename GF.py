@@ -24,11 +24,8 @@ class GF:
             digits.insert(0,imd%2)
             imd = imd//2
         while True:
-            while np.log2(imd) < 8:
+            while imd == 0 or np.log2(imd) < 8:
                 if len(digits) == 0: return GF(imd)
                 imd = 2*imd + digits[0]
                 digits.pop(0)
             imd = irreducible ^ imd
-   
-# print(~GF(4))
-# print((GF(0xd4)*GF(2) + GF(0xbf)*GF(3) + GF(0x5d)*GF(1) + GF(0x30)*GF(1)).val)

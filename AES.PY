@@ -17,8 +17,31 @@ class AES:
             roundKey = KeyGen(roundKey,r)
             plaintext = plaintext ^ roundKey
         return "".join([("" if x > 15 else "0") + hex(x)[2:] for x in plaintext.T.ravel()])
+
     def Decrypt(self,ciphertext,key):
-        pass
+        roundCount = 9
+        roundKey = np.array([int(key[i:i+2],16) for i in range(0,len(key),2)]).reshape(4,4).T
+        ciphertext = np.array([int(ciphertext[i:i+2],16) for i in range(0,len(ciphertext),2)]).reshape(4,4).T
+
+        ciphertext = ciphertext ^ roundKey
+        ciphertext = ShiftRows(ciphertext,inv=True)
+        ciphertext = Sbox(ciphertext,inv=True)
+        for r in range(roundCount):
+            roundKey = KeyGen(roundKey,roundCount-r,inv=True)
+            ciphertext = ciphertext ^ roundKey
+            ciphertext = MixColumns(ciphertext,inv=True)
+            ciphertext = ShiftRows(ciphertext,inv=True)
+            ciphertext = Sbox(ciphertext,inv=True)
+        roundKey = KeyGen(roundKey,0,inv=True)
+        ciphertext = ciphertext ^ roundKey
+        return "".join([("" if x > 15 else "0") + hex(x)[2:] for x in ciphertext.T.ravel()])
 
 A = AES()
-print(A.Encrypt("0189fe7623abdc5445cdba3267ef9810","0f470caf15d9b77f71e8ad67c959d698"))
+plaintext = "0123456789ABCDEF0123456789ABCDEF"
+key       = "0123456789ABCDEF0123456789ABCDEF"
+invKey    = "8821df9e5e9a36f31255d04529bedb5e"
+print(f"plaintext: {plaintext}")
+e = A.Encrypt(plaintext,key)
+print(f"encrypted: {e}")
+d = A.Decrypt(e,invKey)
+print(f"decrypted: {d}")
