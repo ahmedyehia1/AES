@@ -36,12 +36,3 @@ class AES:
         roundKey = KeyGen(roundKey,0,inv=True)
         ciphertext = ciphertext ^ roundKey
         return "".join([("" if x > 15 else "0") + hex(x)[2:] for x in ciphertext.T.ravel()]).upper()
-
-A = AES()
-plaintext = "0123456789ABCDEF0123456789ABCDEF"
-key       = "0123456789ABCDEF0123456789ABCDEF"
-print(f"plaintext: {plaintext}")
-e = A.Encrypt(plaintext,key)
-print(f"encrypted: {e}")
-d = A.Decrypt(e,key)
-print(f"decrypted: {d}")
